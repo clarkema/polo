@@ -1,32 +1,13 @@
 <div class="grid grid-cols-[320px_1fr] min-h-screen">
   <div id="controls">
-    <table>
-      <tr>
-        <td>Latitude:</td>
-        <td><%= format_coord(@view.lat) %></td>
-      </tr>
-      <tr>
-        <td>Longitude:</td>
-        <td><%= format_coord(@view.lng) %></td>
-      </tr>
-      <tr>
-        <td>Zoom:</td>
-        <td><%= @view.zoom %></td>
-      </tr>
-      <tr>
-        <td>User:</td>
-        <td><%= @user_id %></td>
-      </tr>
-    </table>
-
     <div class="mb-4">
       <h3 class="text-lg font-semibold mb-2">Connected Users</h3>
       <ul class="space-y-1">
-        <%= for {user_id, _meta} <- @online_users do %>
+        <%= for {user_id, meta} <- @online_users do %>
           <li class="flex items-center">
             <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
             <span class="text-sm">
-              <%= String.replace(user_id, "user_", "User ") %>
+              <%= meta.display_name %>
               <%= if user_id == @user_id do %>
                 <span class="text-xs text-gray-500">(you)</span>
               <% end %>
@@ -45,4 +26,24 @@
 
   </div>
   <div id="map" phx-hook="Map" phx-update="ignore" data-mapbox-token={@mapbox_token} class="w-full h-full"></div>
+
+    <.modal show={@show_name_modal} id="name_modal">
+      <div class="space-y-4">
+        <h2 class="text-xl font-bold">Welcome to the UNESCO World Heritage map!</h2>
+        <p>Please enter your display name to continue:</p>
+        <form phx-submit="save_display_name">
+          <input type="text"
+                 name="display_name"
+                 class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                 placeholder="Enter your name"
+                 required
+                 autofocus />
+          <div class="mt-4 flex justify-end">
+            <.primary class="w-auto">
+              Join Map
+            </.primary>
+          </div>
+        </form>
+      </div>
+    </.modal>
 </div>

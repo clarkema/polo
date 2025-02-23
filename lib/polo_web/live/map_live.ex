@@ -7,10 +7,10 @@ defmodule PoloWeb.MapLive do
   @default_view %{lat: 52.212, lng: 0.080, zoom: 15}
 
   def mount(_params, _session, socket) do
-    user_id =
+    temp_id =
       if connected?(socket) do
         # Generate unique user ID for this session
-        user_id = "user_#{:crypto.strong_rand_bytes(8) |> Base.encode16()}"
+        temp_id = "user_#{:crypto.strong_rand_bytes(8) |> Base.encode16()}"
 
         # Subscribe to shared map topic
         Phoenix.PubSub.subscribe(Polo.PubSub, @topic)
@@ -23,13 +23,8 @@ defmodule PoloWeb.MapLive do
               @default_view
           end
 
-        # Track this users's presence
-        {:ok, _} = Presence.track(self(), @topic, user_id, Map.merge(current_state,  %{
-          joined_at: DateTime.utc_now(),
-        }))
-
         send(self(), {:map_update, Map.put(current_state, :from_user, "system")})
-        user_id
+        temp_id
       else
         nil
       end
@@ -37,9 +32,12 @@ defmodule PoloWeb.MapLive do
     socket = assign(socket,
       view: %{lat: nil, lng: nil, zoom: nil},
       mapbox_token: Application.get_env(:polo, :mapbox_access_token),
-      user_id: user_id,
+      temp_id: temp_id,
+      user_id: nil,
       online_users: %{},
-      unesco_sites: Polo.UnescoSites.get_sites()
+      unesco_sites: Polo.UnescoSites.get_sites(),
+      show_name_modal: true,
+      display_name: ""
     )
 
     {:ok, socket, layout: false}
@@ -75,6 +73,27 @@ defmodule PoloWeb.MapLive do
   end
   def handle_event("get_unesco_sites", _params, socket) do
     {:noreply, push_event(socket, "load_unesco_sites", %{sites: socket.assigns.unesco_sites})}
+  end
+  def handle_event("save_display_name", %{"display_name" => name}, socket) do
+    if String.trim(name) != "" do
+      {:ok, _} = Presence.track(self(), @topic, socket.assigns.temp_id, %{
+        display_name: name,
+        joined_at: DateTime.utc_now()
+      })
+
+      {:noreply,
+        socket
+        |> assign(
+          show_name_modal: false,
+          user_id: socket.assigns.temp_id,
+          display_name: name
+        )
+        |> push_event("js-exec", %{to: "#name_modal", attr: "phx-remove"})
+      }
+    else
+      {:noreply, socket}
+    end
+
   end
 
   def handle_info({:map_update, %{from_user: user_id} = params}, socket) do
