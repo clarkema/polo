@@ -20,6 +20,8 @@ if System.get_env("PHX_SERVER") do
   config :polo, PoloWeb.Endpoint, server: true
 end
 
+config :polo, :mapbox_access_token, System.get_env("MAPBOX_ACCESS_TOKEN")
+
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you

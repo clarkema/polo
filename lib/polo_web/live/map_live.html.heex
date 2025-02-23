@@ -1,0 +1,15 @@
+<div class="grid grid-cols-[320px_1fr] min-h-screen">
+  <div id="controls">
+    <table>
+      <tr>
+        <td>Latitude:</td>
+        <td><%= format_coord(@view.lat) %></td>
+      </tr>
+      <tr>
+        <td>Longitude:</td>
+        <td><%= format_coord(@view.lng) %></td>
+      </tr>
+    </table>
+  </div>
+  <div id="map" phx-hook="Map" phx-update="ignore" data-mapbox-token={@mapbox_token} class="w-full h-full"></div>
+</div>
