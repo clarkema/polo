@@ -38,7 +38,8 @@ defmodule PoloWeb.MapLive do
       view: %{lat: nil, lng: nil, zoom: nil},
       mapbox_token: Application.get_env(:polo, :mapbox_access_token),
       user_id: user_id,
-      online_users: %{}
+      online_users: %{},
+      unesco_sites: Polo.UnescoSites.get_sites()
     )
 
     {:ok, socket, layout: false}
@@ -59,6 +60,9 @@ defmodule PoloWeb.MapLive do
     }})
 
     {:noreply, assign(socket, view: %{lat: lat, lng: lng, zoom: zoom})}
+  end
+  def handle_event("get_unesco_sites", _params, socket) do
+    {:noreply, push_event(socket, "load_unesco_sites", %{sites: socket.assigns.unesco_sites})}
   end
 
   def handle_info({:map_update, %{from_user: user_id} = params}, socket) do

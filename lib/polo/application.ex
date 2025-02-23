@@ -17,6 +17,7 @@ defmodule Polo.Application do
       {Finch, name: Polo.Finch},
       # Start a worker by calling: Polo.Worker.start_link(arg)
       # {Polo.Worker, arg},
+      Polo.UnescoSites,
       # Start to serve requests, typically the last entry
       PoloWeb.Endpoint
     ]

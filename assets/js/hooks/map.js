@@ -58,6 +58,21 @@ export const MapHook = {
           this.isAnimating = false;
       }, 1100); // Slighly longer than animation to ensure completion
     });
+
+    this.handleEvent("load_unesco_sites", ({sites}) => {
+      sites.forEach(site => {
+        new mapboxgl.Marker()
+          .setLngLat([site.longitude, site.latitude])
+          .setPopup(new mapboxgl.Popup().setHTML(`
+            <h3 class="font-bold">${site.name}</h3>
+            ${site.desc}
+          `))
+          .addTo(this.map);
+      });
+    });
+
+    // Request sites data
+    this.pushEvent("get_unesco_sites", {});
   },
 
   destroyed() {

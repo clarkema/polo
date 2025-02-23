@@ -55,7 +55,10 @@ defmodule Polo.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      {:credo, "~> 1.7", only: [:dev, :test]}
+      {:credo, "~> 1.7", only: [:dev, :test]},
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+      {:erlsom, "~> 1.5"},
+      {:sweet_xml, "~> 0.7.5"}
     ]
   end
 
