@@ -142,10 +142,4 @@ defmodule PoloWeb.MapLive do
       assign(socket, :online_users, Map.delete(socket.assigns.online_users, user_id))
     end)
   end
-
-  defp format_coord(nil), do: ""
-  defp format_coord(value) when is_integer(value), do: value
-  defp format_coord(value) do
-    Float.round(value, 6)
-  end
 end
