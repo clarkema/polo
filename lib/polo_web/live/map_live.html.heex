@@ -18,6 +18,23 @@
         <td><%= @user_id %></td>
       </tr>
     </table>
+
+    <div class="mb-4">
+      <h3 class="text-lg font-semibold mb-2">Connected Users</h3>
+      <ul class="space-y-1">
+        <%= for {user_id, _meta} <- @online_users do %>
+          <li class="flex items-center">
+            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+            <span class="text-sm">
+              <%= String.replace(user_id, "user_", "User ") %>
+              <%= if user_id == @user_id do %>
+                <span class="text-xs text-gray-500">(you)</span>
+              <% end %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
   </div>
   <div id="map" phx-hook="Map" phx-update="ignore" data-mapbox-token={@mapbox_token} class="w-full h-full"></div>
 </div>

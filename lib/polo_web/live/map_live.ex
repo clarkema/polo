@@ -37,7 +37,8 @@ defmodule PoloWeb.MapLive do
     socket = assign(socket,
       view: %{lat: nil, lng: nil, zoom: nil},
       mapbox_token: Application.get_env(:polo, :mapbox_access_token),
-      user_id: user_id
+      user_id: user_id,
+      online_users: %{}
     )
 
     {:ok, socket, layout: false}
@@ -68,8 +69,24 @@ defmodule PoloWeb.MapLive do
       {:noreply, socket}
     end
   end
-  def handle_info(%Broadcast{event: "presence_diff"}, socket) do
+  def handle_info(%Broadcast{event: "presence_diff"} = broadcast, socket) do
+    socket = socket
+      |> handle_leaves(broadcast.payload.leaves)
+      |> handle_joins(broadcast.payload.joins)
+
     {:noreply, socket}
+  end
+
+  defp handle_joins(socket, joins) do
+    Enum.reduce(joins, socket, fn {user_id, %{metas: [meta | _]}}, socket ->
+      assign(socket, :online_users, Map.put(socket.assigns.online_users, user_id, meta))
+    end)
+  end
+
+  defp handle_leaves(socket, leaves) do
+    Enum.reduce(leaves, socket, fn {user_id, _}, socket ->
+      assign(socket, :online_users, Map.delete(socket.assigns.online_users, user_id))
+    end)
   end
 
   defp format_coord(nil), do: ""
