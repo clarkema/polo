@@ -11,7 +11,7 @@ export const MapHook = {
       container: this.el,
       style: 'mapbox://styles/mapbox/streets-v9',
       zoom: 5,
-      center: [-2, 54]
+      center: [-0.080, 52.212]
     });
 
     this.map.addControl(new mapboxgl.NavigationControl());
@@ -37,19 +37,26 @@ export const MapHook = {
       }
     });
 
-    this.handleEvent("update_map", ({lat, lng, zoom}) => {
-        this.isAnimating = true;
+    this.handleEvent("update_map", ({lat, lng, zoom, from_user}) => {
+      // Skip animation for initial system update
+      if (from_user === "system") {
+        this.map.setCenter([lng, lat]);
+        this.map.setZoom(zoom);
+        return;
+      }
 
-        this.map.easeTo({
-            center: [lng, lat],
-            zoom: zoom,
-            duration: 1000 // smooth transition over 1 second
-        });
+      this.isAnimating = true;
 
-        // Reset animation flag after animation completes
-        setTimeout(() => {
-            this.isAnimating = false;
-        }, 1100); // Slighly longer than animation to ensure completion
+      this.map.easeTo({
+          center: [lng, lat],
+          zoom: zoom,
+          duration: 1000 // smooth transition over 1 second
+      });
+
+      // Reset animation flag after animation completes
+      setTimeout(() => {
+          this.isAnimating = false;
+      }, 1100); // Slighly longer than animation to ensure completion
     });
   },
 
