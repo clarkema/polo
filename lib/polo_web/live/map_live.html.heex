@@ -9,6 +9,14 @@
         <td>Longitude:</td>
         <td><%= format_coord(@view.lng) %></td>
       </tr>
+      <tr>
+        <td>Zoom:</td>
+        <td><%= @view.zoom %></td>
+      </tr>
+      <tr>
+        <td>User:</td>
+        <td><%= @user_id %></td>
+      </tr>
     </table>
   </div>
   <div id="map" phx-hook="Map" phx-update="ignore" data-mapbox-token={@mapbox_token} class="w-full h-full"></div>

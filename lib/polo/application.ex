@@ -11,6 +11,8 @@ defmodule Polo.Application do
       PoloWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:polo, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Polo.PubSub},
+      # Start the Presence server
+      PoloWeb.Presence,
       # Start the Finch HTTP client for sending emails
       {Finch, name: Polo.Finch},
       # Start a worker by calling: Polo.Worker.start_link(arg)

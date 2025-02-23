@@ -4,6 +4,9 @@ export const MapHook = {
   mounted() {
 	mapboxgl.accessToken = this.el.dataset.mapboxToken;
 
+    // Track animation state to prevent feedback loops
+    this.isAnimating = false;
+
     this.map = new mapboxgl.Map({
       container: this.el,
       style: 'mapbox://styles/mapbox/streets-v9',
@@ -19,15 +22,34 @@ export const MapHook = {
 
     // Set up event handlers
     this.map.on('moveend', () => {
-      const center = this.map.getCenter();
-      const zoom = this.map.getZoom();
+      // Only send updates if we're not currently processing a received
+      // update
+      if (!this.isAnimating) {
+        const center = this.map.getCenter();
+        const zoom = this.map.getZoom();
 
-      // Push event to LiveView
-      this.pushEvent("view_updated", {
-        lat: center.lat,
-        lng: center.lng,
-        zoom: zoom
-      });
+        // Push event to LiveView
+        this.pushEvent("view_updated", {
+          lat: center.lat,
+          lng: center.lng,
+          zoom: zoom
+        });
+      }
+    });
+
+    this.handleEvent("update_map", ({lat, lng, zoom}) => {
+        this.isAnimating = true;
+
+        this.map.easeTo({
+            center: [lng, lat],
+            zoom: zoom,
+            duration: 1000 // smooth transition over 1 second
+        });
+
+        // Reset animation flag after animation completes
+        setTimeout(() => {
+            this.isAnimating = false;
+        }, 1100); // Slighly longer than animation to ensure completion
     });
   },
 
