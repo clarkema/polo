@@ -35,6 +35,14 @@
         <% end %>
       </ul>
     </div>
+
+    <!-- Random site button -->
+    <div class="flex justify-center">
+      <.button phx-click="random_site">
+        Visit random site
+      </.button>
+    </div>
+
   </div>
   <div id="map" phx-hook="Map" phx-update="ignore" data-mapbox-token={@mapbox_token} class="w-full h-full"></div>
 </div>

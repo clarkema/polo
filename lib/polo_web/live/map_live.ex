@@ -61,6 +61,18 @@ defmodule PoloWeb.MapLive do
 
     {:noreply, assign(socket, view: %{lat: lat, lng: lng, zoom: zoom})}
   end
+  def handle_event("random_site", _params, socket) do
+    site = Enum.random(socket.assigns.unesco_sites)
+
+    Phoenix.PubSub.broadcast(Polo.PubSub, @topic, {:map_update, %{
+      lat: site.latitude,
+      lng: site.longitude,
+      zoom: 12,
+      from_user: "system"
+    }})
+
+    {:noreply, socket}
+  end
   def handle_event("get_unesco_sites", _params, socket) do
     {:noreply, push_event(socket, "load_unesco_sites", %{sites: socket.assigns.unesco_sites})}
   end
