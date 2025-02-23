@@ -1,4 +1,4 @@
-import mapboxgl from '../../vendor/mapbox-gl';
+import mapboxgl from "mapbox-gl";
 
 export const MapHook = {
   mounted() {
