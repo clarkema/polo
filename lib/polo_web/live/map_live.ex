@@ -106,6 +106,7 @@ defmodule PoloWeb.MapLive do
   end
 
   defp format_coord(nil), do: ""
+  defp format_coord(value) when is_integer(value), do: value
   defp format_coord(value) do
     Float.round(value, 6)
   end
