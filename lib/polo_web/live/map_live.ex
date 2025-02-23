@@ -74,12 +74,31 @@ defmodule PoloWeb.MapLive do
   def handle_event("get_unesco_sites", _params, socket) do
     {:noreply, push_event(socket, "load_unesco_sites", %{sites: socket.assigns.unesco_sites})}
   end
+  def handle_event("restore_display_name", %{"name" => name}, socket) do
+    {:ok, _} = Presence.track(self(), @topic, socket.assigns.temp_id, %{
+      display_name: name,
+      joined_at: DateTime.utc_now()
+    })
+
+    {:noreply,
+      socket
+      |> assign(
+        show_name_modal: false,
+        user_id: socket.assigns.temp_id,
+        display_name: name
+      )
+      |> push_event("js-exec", %{to: "#name_modal", attr: "phx-remove"})
+    }
+  end
   def handle_event("save_display_name", %{"display_name" => name}, socket) do
     if String.trim(name) != "" do
       {:ok, _} = Presence.track(self(), @topic, socket.assigns.temp_id, %{
         display_name: name,
         joined_at: DateTime.utc_now()
       })
+
+      # Broadcast to JS to save in localStorage
+      socket = push_event(socket, "save_display_name", %{name: name})
 
       {:noreply,
         socket

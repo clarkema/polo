@@ -25,6 +25,20 @@ import {MapHook} from "./hooks/map.js"
 
 let Hooks = {}
 Hooks.Map = MapHook
+Hooks.UserSession = {
+  mounted() {
+    // Try to restore saved name on mount
+    const savedName = localStorage.getItem("displayName");
+    if (savedName) {
+      this.pushEvent("restore_display_name", { name: savedName });
+    }
+
+    // Listen for name updates to save
+    this.handleEvent("save_display_name", ({name}) => {
+      localStorage.setItem("displayName", name);
+    });
+  }
+}
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
