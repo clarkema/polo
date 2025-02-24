@@ -30,7 +30,11 @@
     <.modal show={@show_name_modal} id="name_modal">
       <div class="space-y-4">
         <h2 class="text-xl font-bold">Welcome to the UNESCO World Heritage map!</h2>
-        <p>Please enter your display name to continue:</p>
+        <p>
+          A simple webapp for shared exploration of human heritage.
+          All connected users share the same view of the map.
+        </p>
+        <p>Please enter your name and let’s explore together!</p>
         <form phx-submit="save_display_name">
           <input type="text"
                  name="display_name"
